@@ -1,0 +1,30 @@
+{
+  "name": "lei-proto",
+  "version": "0.0.1",
+  "description": "simple protocol buffer parser",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha -t 5000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leizongmin/node-lei-proto.git"
+  },
+  "keywords": [
+    "protocol",
+    "buffer",
+    "parser"
+  ],
+  "author": "Zongmin Lei <leizongmin@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leizongmin/node-lei-proto/issues"
+  },
+  "homepage": "https://github.com/leizongmin/node-lei-proto#readme",
+  "devDependencies": {
+    "mocha": "^2.3.3"
+  }
+}
