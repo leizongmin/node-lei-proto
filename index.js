@@ -102,6 +102,7 @@ function parseProto (list) {
     var type = String(item[1]).toLowerCase();
     var size = Number(item[2]);
     var bytes = String(item[3]).toUpperCase();
+
     if (!(size > 0)) size = 0;
     if (bytes !== 'LE') bytes = 'BE';
     if (type === 'float') size = 4;
@@ -189,7 +190,10 @@ function parseProto (list) {
     offset += size;
   });
 
+  var lastItemType = String(list[list.length - 1][1]).toLowerCase();
   var lastItemSize = Number(list[list.length - 1][2]);
+  if (lastItemType === 'float') lastItemSize = 4;
+  if (lastItemType === 'double') lastItemSize = 8;
   var lastItemName = list[list.length - 1][0];
   var encodeSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
                      encodeCheck.join('\n') + '\n' +
