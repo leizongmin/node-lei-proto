@@ -1,14 +1,29 @@
 #1 encode & decode `int`
- - 1000000 times, total spent 477ms, average 0.000477ms, 2096436 times/s
+ - 1000000 times, total spent 537ms, average 0.000537ms, 1862197 times/s
 #2 encode & decode `uint`
- - 1000000 times, total spent 473ms, average 0.000473ms, 2114165 times/s
+ - 1000000 times, total spent 512ms, average 0.000512ms, 1953125 times/s
 #3 encode & decode `float`
- - 1000000 times, total spent 577ms, average 0.000577ms, 1733102 times/s
+ - 1000000 times, total spent 629ms, average 0.000629ms, 1589825 times/s
 #4 encode & decode `double`
- - 1000000 times, total spent 585ms, average 0.000585ms, 1709402 times/s
+ - 1000000 times, total spent 628ms, average 0.000628ms, 1592357 times/s
 #5 encode & decode `string`
- - 1000000 times, total spent 1606ms, average 0.001606ms, 622665 times/s
+ - 1000000 times, total spent 1739ms, average 0.001739ms, 575043 times/s
 #6 encode & decode `buffer`
- - 1000000 times, total spent 1553ms, average 0.001553ms, 643915 times/s
+ - 1000000 times, total spent 1684ms, average 0.001684ms, 593824 times/s
 #7 encode & decode all
- - 1000000 times, total spent 4233ms, average 0.004233ms, 236239 times/s
+ - 1000000 times, total spent 4567ms, average 0.004567ms, 218962 times/s
+--------
+#1 encode & decode `int`
+ - 1000000 times, total spent 783ms, average 0.000783ms, 1277139 times/s
+#2 encode & decode `uint`
+ - 1000000 times, total spent 766ms, average 0.000766ms, 1305483 times/s
+#3 encode & decode `float`
+ - 1000000 times, total spent 911ms, average 0.000911ms, 1097695 times/s
+#4 encode & decode `double`
+ - 1000000 times, total spent 890ms, average 0.000890ms, 1123596 times/s
+#5 encode & decode `string`
+ - 1000000 times, total spent 1760ms, average 0.001760ms, 568182 times/s
+#6 encode & decode `buffer`
+ - 1000000 times, total spent 1608ms, average 0.001608ms, 621891 times/s
+#7 encode & decode all
+ - 1000000 times, total spent 4521ms, average 0.004521ms, 221190 times/s
