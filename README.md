@@ -23,6 +23,8 @@ var p = parseProto([
 ]);
 
 var b = p.encode(1, 2, 3.3, 4.4, 'a', new Buffer('b'));
+// 或者
+// var b = p.encodeEx({a: 1, b: 2, c: 3.3, d: 4.4, e: 'a', f: new Buffer('b')});
 var c = p.decode(b);
 console.log(b);
 // <Buffer 01 02 40 53 33 33 40 11 99 99 99 99 99 9a 61 62>

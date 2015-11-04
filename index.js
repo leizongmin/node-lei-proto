@@ -80,6 +80,10 @@ function InvalidProtocolInfo (msg) {
       d: $buf.slice(16, 21).toString()
     };
   }
+
+  function encodeEx (data) {
+    return encode(data.a, data.b, data.c, data.d);
+  }
 */
 function parseProto (list) {
   var encodeArgs = [];
@@ -203,12 +207,17 @@ function parseProto (list) {
                      decodeBody.join(',\n') + '\n' +
                      '};\n' +
                      '})';
+  var encodeExSource = '(function (data) {\n' +
+                       'return proto.encode(' + encodeArgs.map(function (n) { return 'data.' + n }).join(', ') + ');\n' +
+                       '})';
 
-  return {
-    encode: eval(encodeSource), // 编码器
-    decode: eval(decodeSource), // 解码器
-    size: offset,               // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
+  var proto = {
+    encode: eval(encodeSource),     // 编码器
+    encodeEx: eval(encodeExSource), // 编码器，参数为一个对象
+    decode: eval(decodeSource),     // 解码器
+    size: offset,                   // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
   };
+  return proto;
 }
 
 /*

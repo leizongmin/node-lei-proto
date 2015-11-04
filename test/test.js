@@ -159,6 +159,44 @@ describe('normal', function () {
     assert.equal(c.b.toString(), 'klmnopqrst');
   });
 
+  it('#8 - all', function () {
+    var p = parseProto([
+      ['a', 'uint', 1],
+      ['b', 'int', 2],
+      ['c', 'float'],
+      ['d', 'double'],
+      ['e', 'string', 5],
+      ['f', 'buffer', 6]
+    ]);
+    var b = p.encode(1, 2, 3, 4, 'abc', new Buffer('efg'));
+    var b2 = p.encodeEx({
+      a: 5,
+      b: 6,
+      c: 7,
+      d: 8,
+      e: 'hjk',
+      f: new Buffer('lmn')
+    });
+    var c = p.decode(b);
+    var c2 = p.decode(b2);
+    dump(b);
+    dump(b2);
+    dump(c);
+    dump(c2);
+    assert.equal(c.a, 1);
+    assert.equal(c.b, 2);
+    assert.equal(Number(c.c.toFixed(0)), 3);
+    assert.equal(Number(c.d.toFixed(0)), 4);
+    assert.equal(c.e.slice(0, 3), 'abc');
+    assert.equal(c.f.slice(0, 3).toString(), 'efg');
+    assert.equal(c2.a, 5);
+    assert.equal(c2.b, 6);
+    assert.equal(Number(c2.c.toFixed(0)), 7);
+    assert.equal(Number(c2.d.toFixed(0)), 8);
+    assert.equal(c2.e.slice(0, 3), 'hjk');
+    assert.equal(c2.f.slice(0, 3).toString(), 'lmn');
+  });
+
 });
 
 describe('missing `size`', function () {
