@@ -26,6 +26,7 @@ describe('normal', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 1 + 2 + 3 + 4 + 5 + 6);
     assert.equal(b.length, 1 + 2 + 3 + 4 + 5 + 6);
     assert.deepEqual(c, {
       a: 123,
@@ -50,6 +51,7 @@ describe('normal', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 1 + 2 + 3 + 4 + 5 + 6);
     assert.equal(b.length, 1 + 2 + 3 + 4 + 5 + 6);
     assert.deepEqual(c, {
       a: 123,
@@ -74,6 +76,7 @@ describe('normal', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 1 + 2 + 3 + 4 + 5 + 6);
     assert.equal(b.length, 1 + 2 + 3 + 4 + 5 + 6);
     assert.deepEqual(c, {
       a: 123,
@@ -98,6 +101,7 @@ describe('normal', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 1 + 2 + 3 + 4 + 5 + 6);
     assert.equal(b.length, 1 + 2 + 3 + 4 + 5 + 6);
     assert.deepEqual(c, {
       a: 123,
@@ -118,6 +122,7 @@ describe('normal', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 4 + 8);
     assert.equal(b.length, 4 + 8);
     assert.equal(Number(c.a.toFixed(3)), 12.345);
     assert.equal(Number(c.b.toFixed(6)), 67.891011);
@@ -132,6 +137,7 @@ describe('normal', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 4 + 8);
     assert.equal(b.length, 4 + 8);
     assert.equal(Number(c.a.toFixed(3)), 12.345);
     assert.equal(Number(c.b.toFixed(6)), 67.891011);
@@ -146,6 +152,7 @@ describe('normal', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 20);
     assert.equal(b.length, 20);
     assert.equal(c.a, 'abcdefghij');
     assert.ok(Buffer.isBuffer(c.b));
@@ -290,6 +297,7 @@ describe('not need `size`', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 4 + 8);
     assert.equal(b.length, 4 + 8);
     assert.equal(Number(c.a.toFixed(3)), 12.345);
     assert.equal(Number(c.b.toFixed(6)), 67.891011);
@@ -304,6 +312,7 @@ describe('not need `size`', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 5);
     assert.equal(b.length, 15);
     assert.equal(c.a, '12345');
     assert.equal(c.b, 'abcdefghij');
@@ -318,6 +327,7 @@ describe('not need `size`', function () {
     var c = p.decode(b);
     dump(b);
     dump(c);
+    assert.equal(p.size, 5);
     assert.equal(b.length, 15);
     assert.equal(c.a.toString(), '12345');
     assert.equal(c.b.toString(), 'abcdefghij');

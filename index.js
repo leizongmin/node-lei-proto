@@ -204,7 +204,11 @@ function parseProto (list) {
                      '};\n' +
                      '})';
 
-  return {encode: eval(encodeSource), decode: eval(decodeSource)};
+  return {
+    encode: eval(encodeSource), // 编码器
+    decode: eval(decodeSource), // 解码器
+    size: offset,               // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
+  };
 }
 
 /*
