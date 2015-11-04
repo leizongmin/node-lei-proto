@@ -59,21 +59,15 @@ function InvalidProtocolInfo (msg) {
   proto = [['a', 'uint', 2, 'be'], ['b', 'uint', 4, 'le'], ['c', 'buffer', 10], ['d', 'string', 5]]
 
   function encode (a, b, c, d) {
-    if (isNaN(a)) throw new InvalidDataType('a', 'uint');
-    if (isNaN(b)) throw new InvalidDataType('b', 'uint');
+    if (typeof a !== 'number' || isNaN(a)) throw new InvalidDataType('a', 'uint');
+    if (typeof a !== 'number' || isNaN(b)) throw new InvalidDataType('b', 'uint');
     if (!Buffer.isBuffer(c)) InvalidDataType('c', 'buffer');
     if (typeof d !== 'string') InvalidDataType('d', 'string');
-
     var $buf = new Buffer(21);
-    var $offset = 0;
-    $buf.writeUInt16BE(a, $offset);
-    $offset += 2;
-    $buf.writeUInt32LE(b, $offset);
-    $offset += 4;
-    c.copy($buf, $offset, 0, 10);
-    $offset += 10;
-    $buf.write(d, $offset, 5);
-
+    $buf.writeUInt16BE(a, 0);
+    $buf.writeUInt32LE(b, 2);
+    c.copy($buf, 6, 0, 10);
+    $buf.write(d, 16, 5);
     return $buf;
   }
 
@@ -117,12 +111,14 @@ function parseProto (list) {
       if (size < 1 && i < list.length - 1) {
         throw new InvalidDataSize(name, size);
       }
+    } else if (size < 1) {
+      throw new InvalidDataSize(name, size);
     }
 
     encodeArgs.push(name);
     switch (type) {
       case 'int':
-        encodeCheck.push('if (isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+        encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
         if (size === 1) {
           encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
           decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
@@ -138,7 +134,7 @@ function parseProto (list) {
         }
         break;
       case 'uint':
-        encodeCheck.push('if (isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+        encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
         if (size === 1) {
           encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
           decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
@@ -154,12 +150,12 @@ function parseProto (list) {
         }
         break;
       case 'float':
-        encodeCheck.push('if (isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+        encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
         encodeBody.push('$buf.writeFloat' + bytes + '(' + name + ', ' + offset + ');');
         decodeBody.push(name + ': $buf.readFloat' + bytes + '(' + offset + ')');
         break;
       case 'double':
-        encodeCheck.push('if (isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+        encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
         encodeBody.push('$buf.writeDouble' + bytes + '(' + name + ', ' + offset + ');');
         decodeBody.push(name + ': $buf.readDouble' + bytes + '(' + offset + ')');
         break;

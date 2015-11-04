@@ -11,7 +11,7 @@ function dump () {
   console.log.apply(console, arguments);
 }
 
-describe('lei-proto', function () {
+describe('normal', function () {
 
   it('#1 - int LE', function () {
     var p = parseProto([
@@ -123,7 +123,7 @@ describe('lei-proto', function () {
     assert.equal(Number(c.b.toFixed(6)), 67.891011);
   });
 
-  it('#5 - float & double BE', function () {
+  it('#6 - float & double BE', function () {
     var p = parseProto([
       ['a', 'float', 0, 'BE'],
       ['b', 'double', 0, 'BE']
@@ -135,6 +135,192 @@ describe('lei-proto', function () {
     assert.equal(b.length, 4 + 8);
     assert.equal(Number(c.a.toFixed(3)), 12.345);
     assert.equal(Number(c.b.toFixed(6)), 67.891011);
+  });
+
+  it('#7 - string & buffer', function () {
+    var p = parseProto([
+      ['a', 'string', 10],
+      ['b', 'buffer', 10]
+    ]);
+    var b = p.encode('abcdefghij', new Buffer('klmnopqrst'));
+    var c = p.decode(b);
+    dump(b);
+    dump(c);
+    assert.equal(b.length, 20);
+    assert.equal(c.a, 'abcdefghij');
+    assert.ok(Buffer.isBuffer(c.b));
+    assert.equal(c.b.toString(), 'klmnopqrst');
+  });
+
+});
+
+describe('missing `size`', function () {
+
+  it('#1 int', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'int']]);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_DATA_SIZE';
+    });
+  });
+
+  it('#2 uint', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'uint']]);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_DATA_SIZE';
+    });
+  });
+
+  it('#3 string', function () {
+    assert.throws(function () {
+      var p = parseProto([
+        ['a', 'string'],
+        ['b', 'string']
+      ]);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_DATA_SIZE';
+    });
+  });
+
+  it('#4 buffer', function () {
+    assert.throws(function () {
+      var p = parseProto([
+        ['a', 'buffer'],
+        ['b', 'buffer']
+      ]);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_DATA_SIZE';
+    });
+  });
+
+});
+
+describe('invalid data type', function () {
+
+  it('#1 not support type', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'byte']]);
+    }, function (err) {
+      dump(err);
+      return err.code === 'NOT_SUPPORT_TYPE';
+    });
+  });
+
+  it('#2 invalid type - int', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'int', 1]]);
+      var b = p.encode('123');
+      dump(b);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_TYPE';
+    });
+  });
+
+  it('#3 invalid type - uint', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'uint', 1]]);
+      var b = p.encode('123');
+      dump(b);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_TYPE';
+    });
+  });
+
+  it('#4 invalid type - float', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'float']]);
+      var b = p.encode('123');
+      dump(b);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_TYPE';
+    });
+  });
+
+  it('#5 invalid type - double', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'double']]);
+      var b = p.encode('123');
+      dump(b);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_TYPE';
+    });
+  });
+
+  it('#6 invalid type - string', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'string']]);
+      var b = p.encode(123);
+      dump(b);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_TYPE';
+    });
+  });
+
+  it('#7 invalid type - buffer', function () {
+    assert.throws(function () {
+      var p = parseProto([['a', 'buffer']]);
+      var b = p.encode('123');
+      dump(b);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_TYPE';
+    });
+  });
+
+});
+
+describe('not need `size`', function () {
+
+  it('#1 float & double', function () {
+    var p = parseProto([
+      ['a', 'float'],
+      ['b', 'double']
+    ]);
+    var b = p.encode(12.345, 67.891011);
+    var c = p.decode(b);
+    dump(b);
+    dump(c);
+    assert.equal(b.length, 4 + 8);
+    assert.equal(Number(c.a.toFixed(3)), 12.345);
+    assert.equal(Number(c.b.toFixed(6)), 67.891011);
+  });
+
+  it('#2 last `string` item', function () {
+    var p = parseProto([
+      ['a', 'string', 5],
+      ['b', 'string']
+    ]);
+    var b = p.encode('1234567890', 'abcdefghij');
+    var c = p.decode(b);
+    dump(b);
+    dump(c);
+    assert.equal(b.length, 15);
+    assert.equal(c.a, '12345');
+    assert.equal(c.b, 'abcdefghij');
+  });
+
+  it('#3 last `buffer` item', function () {
+    var p = parseProto([
+      ['a', 'buffer', 5],
+      ['b', 'buffer']
+    ]);
+    var b = p.encode(new Buffer('1234567890'), new Buffer('abcdefghij'));
+    var c = p.decode(b);
+    dump(b);
+    dump(c);
+    assert.equal(b.length, 15);
+    assert.equal(c.a.toString(), '12345');
+    assert.equal(c.b.toString(), 'abcdefghij');
   });
 
 });
