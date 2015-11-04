@@ -1,0 +1,14 @@
+#1 encode & decode `int`
+ - 1000000 times, total spent 477ms, average 0.000477ms, 2096436 times/s
+#2 encode & decode `uint`
+ - 1000000 times, total spent 473ms, average 0.000473ms, 2114165 times/s
+#3 encode & decode `float`
+ - 1000000 times, total spent 577ms, average 0.000577ms, 1733102 times/s
+#4 encode & decode `double`
+ - 1000000 times, total spent 585ms, average 0.000585ms, 1709402 times/s
+#5 encode & decode `string`
+ - 1000000 times, total spent 1606ms, average 0.001606ms, 622665 times/s
+#6 encode & decode `buffer`
+ - 1000000 times, total spent 1553ms, average 0.001553ms, 643915 times/s
+#7 encode & decode all
+ - 1000000 times, total spent 4233ms, average 0.004233ms, 236239 times/s
