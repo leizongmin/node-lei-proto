@@ -324,3 +324,30 @@ describe('not need `size`', function () {
   });
 
 });
+
+describe('other error', function () {
+
+  it('#1 repeated field', function () {
+    assert.throws(function () {
+      var p = parseProto([
+        ['a', 'float'],
+        ['a', 'float']
+      ]);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_PARAMETER_FORMAT';
+    });
+  });
+
+  it('#2 invalid field name', function () {
+    assert.throws(function () {
+      var p = parseProto([
+        ['0a', 'float']
+      ]);
+    }, function (err) {
+      dump(err);
+      return err.code === 'INVALID_PARAMETER_FORMAT';
+    });
+  });
+
+});
