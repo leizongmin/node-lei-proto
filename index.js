@@ -56,7 +56,12 @@ function InvalidProtocolInfo (msg) {
 
 
 /*
-  proto = [['a', 'uint', 2, 'be'], ['b', 'uint', 4, 'le'], ['c', 'buffer', 10], ['d', 'string', 5]]
+  proto = [
+    ['a', 'uint', 2, 'be'],
+    ['b', 'uint', 4, 'le'],
+    ['c', 'buffer', 10],
+    ['d', 'string', 5]
+  ];
 
   function encode (a, b, c, d) {
     if (typeof a !== 'number' || isNaN(a)) throw new InvalidDataType('a', 'uint');
