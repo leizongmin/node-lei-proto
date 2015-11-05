@@ -1,6 +1,6 @@
 {
   "name": "lei-proto",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "simple protocol buffer parser",
   "main": "index.js",
   "directories": {
