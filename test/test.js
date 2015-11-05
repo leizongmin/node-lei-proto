@@ -22,8 +22,8 @@ describe('normal', function () {
       ['e', 'int', 5, 'LE'],
       ['f', 'int', 6, 'LE']
     ]);
-    var b = p.encode(123, 456, 789, 101112, 131415, 1617181920);
-    var c = p.decode(b);
+    var b = p.encodeStrict(123, 456, 789, 101112, 131415, 1617181920);
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 1 + 2 + 3 + 4 + 5 + 6);
@@ -47,8 +47,8 @@ describe('normal', function () {
       ['e', 'int', 5, 'BE'],
       ['f', 'int', 6, 'BE']
     ]);
-    var b = p.encode(123, 456, 789, 101112, 131415, 1617181920);
-    var c = p.decode(b);
+    var b = p.encodeStrict(123, 456, 789, 101112, 131415, 1617181920);
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 1 + 2 + 3 + 4 + 5 + 6);
@@ -72,8 +72,8 @@ describe('normal', function () {
       ['e', 'uint', 5, 'LE'],
       ['f', 'uint', 6, 'LE']
     ]);
-    var b = p.encode(123, 456, 789, 101112, 131415, 1617181920);
-    var c = p.decode(b);
+    var b = p.encodeStrict(123, 456, 789, 101112, 131415, 1617181920);
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 1 + 2 + 3 + 4 + 5 + 6);
@@ -97,8 +97,8 @@ describe('normal', function () {
       ['e', 'uint', 5, 'BE'],
       ['f', 'uint', 6, 'BE']
     ]);
-    var b = p.encode(123, 456, 789, 101112, 131415, 1617181920);
-    var c = p.decode(b);
+    var b = p.encodeStrict(123, 456, 789, 101112, 131415, 1617181920);
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 1 + 2 + 3 + 4 + 5 + 6);
@@ -118,8 +118,8 @@ describe('normal', function () {
       ['a', 'float', 0, 'LE'],
       ['b', 'double', 0, 'LE']
     ]);
-    var b = p.encode(12.345, 67.891011);
-    var c = p.decode(b);
+    var b = p.encodeStrict(12.345, 67.891011);
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 4 + 8);
@@ -133,8 +133,8 @@ describe('normal', function () {
       ['a', 'float', 0, 'BE'],
       ['b', 'double', 0, 'BE']
     ]);
-    var b = p.encode(12.345, 67.891011);
-    var c = p.decode(b);
+    var b = p.encodeStrict(12.345, 67.891011);
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 4 + 8);
@@ -148,8 +148,8 @@ describe('normal', function () {
       ['a', 'string', 10],
       ['b', 'buffer', 10]
     ]);
-    var b = p.encode('abcdefghij', new Buffer('klmnopqrst'));
-    var c = p.decode(b);
+    var b = p.encodeStrict('abcdefghij', new Buffer('klmnopqrst'));
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 20);
@@ -168,8 +168,8 @@ describe('normal', function () {
       ['e', 'string', 5],
       ['f', 'buffer', 6]
     ]);
-    var b = p.encode(1, 2, 3, 4, 'abc', new Buffer('efg'));
-    var b2 = p.encodeEx({
+    var b = p.encodeStrict(1, 2, 3, 4, 'abc', new Buffer('efg'));
+    var b2 = p.encodeExStrict({
       a: 5,
       b: 6,
       c: 7,
@@ -177,8 +177,8 @@ describe('normal', function () {
       e: 'hjk',
       f: new Buffer('lmn')
     });
-    var c = p.decode(b);
-    var c2 = p.decode(b2);
+    var c = p.decodeStrict(b);
+    var c2 = p.decodeStrict(b2);
     dump(b);
     dump(b2);
     dump(c);
@@ -259,7 +259,7 @@ describe('invalid data type', function () {
   it('#2 invalid type - int', function () {
     assert.throws(function () {
       var p = parseProto([['a', 'int', 1]]);
-      var b = p.encode('123');
+      var b = p.encodeStrict('123');
       dump(b);
     }, function (err) {
       dump(err);
@@ -270,7 +270,7 @@ describe('invalid data type', function () {
   it('#3 invalid type - uint', function () {
     assert.throws(function () {
       var p = parseProto([['a', 'uint', 1]]);
-      var b = p.encode('123');
+      var b = p.encodeStrict('123');
       dump(b);
     }, function (err) {
       dump(err);
@@ -281,7 +281,7 @@ describe('invalid data type', function () {
   it('#4 invalid type - float', function () {
     assert.throws(function () {
       var p = parseProto([['a', 'float']]);
-      var b = p.encode('123');
+      var b = p.encodeStrict('123');
       dump(b);
     }, function (err) {
       dump(err);
@@ -292,7 +292,7 @@ describe('invalid data type', function () {
   it('#5 invalid type - double', function () {
     assert.throws(function () {
       var p = parseProto([['a', 'double']]);
-      var b = p.encode('123');
+      var b = p.encodeStrict('123');
       dump(b);
     }, function (err) {
       dump(err);
@@ -303,7 +303,7 @@ describe('invalid data type', function () {
   it('#6 invalid type - string', function () {
     assert.throws(function () {
       var p = parseProto([['a', 'string']]);
-      var b = p.encode(123);
+      var b = p.encodeStrict(123);
       dump(b);
     }, function (err) {
       dump(err);
@@ -314,7 +314,7 @@ describe('invalid data type', function () {
   it('#7 invalid type - buffer', function () {
     assert.throws(function () {
       var p = parseProto([['a', 'buffer']]);
-      var b = p.encode('123');
+      var b = p.encodeStrict('123');
       dump(b);
     }, function (err) {
       dump(err);
@@ -331,8 +331,8 @@ describe('not need `size`', function () {
       ['a', 'float'],
       ['b', 'double']
     ]);
-    var b = p.encode(12.345, 67.891011);
-    var c = p.decode(b);
+    var b = p.encodeStrict(12.345, 67.891011);
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 4 + 8);
@@ -346,8 +346,8 @@ describe('not need `size`', function () {
       ['a', 'string', 5],
       ['b', 'string']
     ]);
-    var b = p.encode('1234567890', 'abcdefghij');
-    var c = p.decode(b);
+    var b = p.encodeStrict('1234567890', 'abcdefghij');
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 5);
@@ -361,8 +361,8 @@ describe('not need `size`', function () {
       ['a', 'buffer', 5],
       ['b', 'buffer']
     ]);
-    var b = p.encode(new Buffer('1234567890'), new Buffer('abcdefghij'));
-    var c = p.decode(b);
+    var b = p.encodeStrict(new Buffer('1234567890'), new Buffer('abcdefghij'));
+    var c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 5);

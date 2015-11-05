@@ -196,26 +196,42 @@ function parseProto (list) {
   if (lastItemType === 'double') lastItemSize = 8;
   var lastItemName = list[list.length - 1][0];
   var encodeSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
+                     'var $buf = new Buffer(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
+                     encodeBody.join('\n') + '\n' +
+                     'return $buf;\n' +
+                     '})';
+  var encodeStrictSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
                      encodeCheck.join('\n') + '\n' +
                      'var $buf = new Buffer(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
+  var encodeExSource = '(function (data) {\n' +
+                       'return proto.encode(' + encodeArgs.map(function (n) { return 'data.' + n }).join(', ') + ');\n' +
+                       '})';
+  var encodeExStrictSource = '(function (data) {\n' +
+                       'return proto.encodeStrict(' + encodeArgs.map(function (n) { return 'data.' + n }).join(', ') + ');\n' +
+                       '})';
   var decodeSource = '(function ($buf) {\n' +
+                     'return {\n' +
+                     decodeBody.join(',\n') + '\n' +
+                     '};\n' +
+                     '})';
+  var decodeStrictSource = '(function ($buf) {\n' +
                      'if ($buf.length < ' + offset + ') throw new IncorrectBufferSize(' + offset + ', $buf.length);\n' +
                      'return {\n' +
                      decodeBody.join(',\n') + '\n' +
                      '};\n' +
                      '})';
-  var encodeExSource = '(function (data) {\n' +
-                       'return proto.encode(' + encodeArgs.map(function (n) { return 'data.' + n }).join(', ') + ');\n' +
-                       '})';
 
   var proto = {
-    encode: eval(encodeSource),     // 编码器
-    encodeEx: eval(encodeExSource), // 编码器，参数为一个对象
-    decode: eval(decodeSource),     // 解码器
-    size: offset,                   // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
+    encode: eval(encodeSource),                  // 编码器
+    encodeEx: eval(encodeExSource),              // 编码器，参数为一个对象
+    encodeStrict: eval(encodeStrictSource),      // 严格模式的编码器
+    encodeExStrict: eval(encodeExStrictSource),  // 严格模式的编码器，参数为一个对象
+    decode: eval(decodeSource),                  // 解码器
+    decodeStrict: eval(decodeStrictSource),      // 严格模式的解码器
+    size: offset,                                // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
   };
   return proto;
 }
