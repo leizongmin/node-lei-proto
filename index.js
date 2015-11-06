@@ -90,6 +90,20 @@ function InvalidProtocolInfo (msg) {
     return encode(data.a, data.b, data.c, data.d);
   }
 */
+
+function generateFunction (encodeSource, encodeExSource, encodeStrictSource, encodeExStrictSource, decodeSource, decodeStrictSource, offset) {
+  var proto = {
+    encode: eval(encodeSource),                  // 编码器
+    encodeEx: eval(encodeExSource),              // 编码器，参数为一个对象
+    encodeStrict: eval(encodeStrictSource),      // 严格模式的编码器
+    encodeExStrict: eval(encodeExStrictSource),  // 严格模式的编码器，参数为一个对象
+    decode: eval(decodeSource),                  // 解码器
+    decodeStrict: eval(decodeStrictSource),      // 严格模式的解码器
+    size: offset,                                // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
+  };
+  return proto;
+}
+
 function parseProto (list) {
   var encodeArgs = [];
   var encodeCheck = [];
@@ -229,16 +243,7 @@ function parseProto (list) {
                      '};\n' +
                      '})';
 
-  var proto = {
-    encode: eval(encodeSource),                  // 编码器
-    encodeEx: eval(encodeExSource),              // 编码器，参数为一个对象
-    encodeStrict: eval(encodeStrictSource),      // 严格模式的编码器
-    encodeExStrict: eval(encodeExStrictSource),  // 严格模式的编码器，参数为一个对象
-    decode: eval(decodeSource),                  // 解码器
-    decodeStrict: eval(decodeStrictSource),      // 严格模式的解码器
-    size: offset,                                // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
-  };
-  return proto;
+  return generateFunction(encodeSource, encodeExSource, encodeStrictSource, encodeExStrictSource, decodeSource, decodeStrictSource, offset);
 }
 
 /*
