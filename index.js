@@ -125,7 +125,7 @@ function parseProto (list) {
     if (type === 'float') size = 4;
     if (type === 'double') size = 8;
 
-    if (!/^[a-z_]/.test(name)) throw new InvalidParameterNameFormat(name);
+    if (!/^[a-zA-Z_]/.test(name)) throw new InvalidParameterNameFormat(name);
     if (encodeArgs.indexOf(name) !== -1) throw new InvalidParameterNameFormat(name);
 
     if (DATA_TYPES.indexOf(type) === -1) throw new NotSupportDataType(name, type);
