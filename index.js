@@ -188,8 +188,8 @@ function parseProto (list) {
           encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0, ' + size + ')');
           decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ').toString()');
         } else {
-          encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0).toString()');
-          decodeBody.push(name + ': $buf.slice(' + offset + ')');
+          encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0)');
+          decodeBody.push(name + ': $buf.slice(' + offset + ').toString()');
         }
         break;
       case 'buffer':
