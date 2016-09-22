@@ -1,11 +1,11 @@
 {
   "name": "lei-proto",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "simple protocol buffer parser",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "mocha -t 5000"
   },
