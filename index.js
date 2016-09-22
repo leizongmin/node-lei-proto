@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * lei-proto
  *
@@ -5,50 +7,42 @@
  */
 
 
+const DATA_TYPES = [ 'int', 'uint', 'float', 'double', 'string', 'buffer' ];
 
-var DATA_TYPES = ['int', 'uint', 'float', 'double', 'string', 'buffer'];
-
-function NotSupportDataType (parameter, type) {
-  var err = new Error('not support type `' + type + '`');
+function NotSupportDataType(parameter, type) {
+  const err = new Error('not support type `' + type + '`');
   err.code = 'NOT_SUPPORT_TYPE';
   err.parameter = parameter;
   err.type = type;
   return err;
 }
 
+// eslint-disable-next-line
 function InvalidDataType (parameter, type) {
-  var err = new Error('`' + parameter + '` is not a ' + type);
+  const err = new Error('`' + parameter + '` is not a ' + type);
   err.code = 'INVALID_TYPE';
   err.parameter = parameter;
   err.type = type;
   return err;
 }
 
-function InvalidDataSize (parameter, size) {
-  var err = new Error('invalid size for `' + parameter + '`');
+function InvalidDataSize(parameter, size) {
+  const err = new Error('invalid size for `' + parameter + '`');
   err.code = 'INVALID_DATA_SIZE';
   err.parameter = parameter;
   err.size = size;
   return err;
 }
 
-function IncorrectBufferSize (expectedSize, actualSize) {
-  var err = new Error('incorrect buffer size, expected >= ' + expectedSize + ', actual = ' + actualSize);
-  err.code = 'INCORRECT_BUFFER_SIZE';
-  err.expectedSize = expectedSize;
-  err.actualSize = actualSize;
-  return err;
-}
-
-function InvalidParameterNameFormat (name) {
-  var err = new Error('invalid parameter format `' + name + '`');
+function InvalidParameterNameFormat(name) {
+  const err = new Error('invalid parameter format `' + name + '`');
   err.code = 'INVALID_PARAMETER_FORMAT';
   err.name = name;
   return err;
 }
 
-function InvalidProtocolInfo (msg) {
-  var err = new Error('invalid protocol info: ' + msg);
+function InvalidProtocolInfo(msg) {
+  const err = new Error('invalid protocol info: ' + msg);
   err.code = 'INVALID_PROTOCOL_INFO';
   err.info = msg;
   return err;
@@ -63,7 +57,7 @@ function InvalidProtocolInfo (msg) {
     ['d', 'string', 5]
   ];
 
-  function encode (a, b, c, d) {
+  function encode(a, b, c, d) {
     if (typeof a !== 'number' || isNaN(a)) throw new InvalidDataType('a', 'uint');
     if (typeof a !== 'number' || isNaN(b)) throw new InvalidDataType('b', 'uint');
     if (!Buffer.isBuffer(c)) InvalidDataType('c', 'buffer');
@@ -76,8 +70,7 @@ function InvalidProtocolInfo (msg) {
     return $buf;
   }
 
-  function decode ($buf) {
-    if ($buf.length < 21) throw new IncorrectBufferSize(21, $buf.length);
+  function decode($buf) {
     return {
       a: $buf.readUInt16BE(0),
       b: $buf.readUInt32LE(2),
@@ -86,39 +79,46 @@ function InvalidProtocolInfo (msg) {
     };
   }
 
-  function encodeEx (data) {
+  function encodeEx(data) {
     return encode(data.a, data.b, data.c, data.d);
   }
 */
 
-function generateFunction (encodeSource, encodeExSource, encodeStrictSource, encodeExStrictSource, decodeSource, decodeStrictSource, offset) {
-  var proto = {
-    encode: eval(encodeSource),                  // 编码器
-    encodeEx: eval(encodeExSource),              // 编码器，参数为一个对象
-    encodeStrict: eval(encodeStrictSource),      // 严格模式的编码器
-    encodeExStrict: eval(encodeExStrictSource),  // 严格模式的编码器，参数为一个对象
-    decode: eval(decodeSource),                  // 解码器
-    decodeStrict: eval(decodeStrictSource),      // 严格模式的解码器
-    size: offset,                                // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
+function generateFunction(encodeSource, encodeExSource, encodeStrictSource, encodeExStrictSource, decodeSource, decodeStrictSource, offset) {
+  const proto = {
+    // 编码器
+    encode: eval(encodeSource),
+    // 编码器，参数为一个对象
+    encodeEx: eval(encodeExSource),
+    // 严格模式的编码器
+    encodeStrict: eval(encodeStrictSource),
+    // 严格模式的编码器，参数为一个对象
+    encodeExStrict: eval(encodeExStrictSource),
+    // 解码器
+    decode: eval(decodeSource),
+    // 严格模式的解码器
+    decodeStrict: eval(decodeStrictSource),
+     // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
+    size: offset,
   };
   return proto;
 }
 
-function parseProto (list) {
-  var encodeArgs = [];
-  var encodeCheck = [];
-  var encodeBody = [];
-  var decodeBody = [];
-  var offset = 0;
+function parseProto(list) {
+  const encodeArgs = [];
+  const encodeCheck = [];
+  const encodeBody = [];
+  const decodeBody = [];
+  let offset = 0;
 
   list.forEach(function (item, i) {
     if (!Array.isArray(item)) throw new InvalidProtocolInfo('item must be an array');
     if (item.length < 2) throw new InvalidProtocolInfo('missing `name` and `type`');
 
-    var name = String(item[0]);
-    var type = String(item[1]).toLowerCase();
-    var size = Number(item[2]);
-    var bytes = String(item[3]).toUpperCase();
+    const name = String(item[0]);
+    const type = String(item[1]).toLowerCase();
+    let size = Number(item[2]);
+    let bytes = String(item[3]).toUpperCase();
 
     if (!(size > 0)) size = 0;
     if (bytes !== 'LE') bytes = 'BE';
@@ -140,103 +140,103 @@ function parseProto (list) {
 
     encodeArgs.push(name);
     switch (type) {
-      case 'int':
-        encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
-        if (size === 1) {
-          encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
-          decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
-        } else if (size === 2) {
-          encodeBody.push('$buf.writeInt16' + bytes + '(' + name + ', ' + offset + ');');
-          decodeBody.push(name + ': $buf.readInt16' + bytes + '(' + offset + ')');
-        } else if (size === 4) {
-          encodeBody.push('$buf.writeInt32' + bytes + '(' + name + ', ' + offset + ');');
-          decodeBody.push(name + ': $buf.readInt32' + bytes + '(' + offset + ')');
-        } else {
-          encodeBody.push('$buf.writeInt' + bytes + '(' + name + ', ' + offset + ', ' + size + ');');
-          decodeBody.push(name + ': $buf.readInt' + bytes + '(' + offset + ', ' + size + ')');
-        }
-        break;
-      case 'uint':
-        encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
-        if (size === 1) {
-          encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
-          decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
-        } else if (size === 2) {
-          encodeBody.push('$buf.writeUInt16' + bytes + '(' + name + ', ' + offset + ');');
-          decodeBody.push(name + ': $buf.readUInt16' + bytes + '(' + offset + ')');
-        } else if (size === 4) {
-          encodeBody.push('$buf.writeUInt32' + bytes + '(' + name + ', ' + offset + ');');
-          decodeBody.push(name + ': $buf.readUInt32' + bytes + '(' + offset + ')');
-        } else {
-          encodeBody.push('$buf.writeUInt' + bytes + '(' + name + ', ' + offset + ', ' + size + ');');
-          decodeBody.push(name + ': $buf.readUInt' + bytes + '(' + offset + ', ' + size + ')');
-        }
-        break;
-      case 'float':
-        encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
-        encodeBody.push('$buf.writeFloat' + bytes + '(' + name + ', ' + offset + ');');
-        decodeBody.push(name + ': $buf.readFloat' + bytes + '(' + offset + ')');
-        break;
-      case 'double':
-        encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
-        encodeBody.push('$buf.writeDouble' + bytes + '(' + name + ', ' + offset + ');');
-        decodeBody.push(name + ': $buf.readDouble' + bytes + '(' + offset + ')');
-        break;
-      case 'string':
-        encodeCheck.push('if (typeof ' + name + ' !== "string") throw new InvalidDataType("' + name + '", "' + type + '");');
-        if (size > 0) {
-          encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0, ' + size + ')');
-          decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ').toString()');
-        } else {
-          encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0)');
-          decodeBody.push(name + ': $buf.slice(' + offset + ').toString()');
-        }
-        break;
-      case 'buffer':
-        encodeCheck.push('if (!Buffer.isBuffer(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
-        if (size > 0) {
-          encodeBody.push(name + '.copy($buf, ' + offset + ', 0, ' + size + ')');
-          decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ')');
-        } else {
-          encodeBody.push(name + '.copy($buf, ' + offset + ', 0)');
-          decodeBody.push(name + ': $buf.slice(' + offset + ')');
-        }
-        break;
-      default:
-        throw new NotSupportDataType(name, type);
+    case 'int':
+      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      if (size === 1) {
+        encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
+        decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
+      } else if (size === 2) {
+        encodeBody.push('$buf.writeInt16' + bytes + '(' + name + ', ' + offset + ');');
+        decodeBody.push(name + ': $buf.readInt16' + bytes + '(' + offset + ')');
+      } else if (size === 4) {
+        encodeBody.push('$buf.writeInt32' + bytes + '(' + name + ', ' + offset + ');');
+        decodeBody.push(name + ': $buf.readInt32' + bytes + '(' + offset + ')');
+      } else {
+        encodeBody.push('$buf.writeInt' + bytes + '(' + name + ', ' + offset + ', ' + size + ');');
+        decodeBody.push(name + ': $buf.readInt' + bytes + '(' + offset + ', ' + size + ')');
+      }
+      break;
+    case 'uint':
+      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      if (size === 1) {
+        encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
+        decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
+      } else if (size === 2) {
+        encodeBody.push('$buf.writeUInt16' + bytes + '(' + name + ', ' + offset + ');');
+        decodeBody.push(name + ': $buf.readUInt16' + bytes + '(' + offset + ')');
+      } else if (size === 4) {
+        encodeBody.push('$buf.writeUInt32' + bytes + '(' + name + ', ' + offset + ');');
+        decodeBody.push(name + ': $buf.readUInt32' + bytes + '(' + offset + ')');
+      } else {
+        encodeBody.push('$buf.writeUInt' + bytes + '(' + name + ', ' + offset + ', ' + size + ');');
+        decodeBody.push(name + ': $buf.readUInt' + bytes + '(' + offset + ', ' + size + ')');
+      }
+      break;
+    case 'float':
+      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      encodeBody.push('$buf.writeFloat' + bytes + '(' + name + ', ' + offset + ');');
+      decodeBody.push(name + ': $buf.readFloat' + bytes + '(' + offset + ')');
+      break;
+    case 'double':
+      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      encodeBody.push('$buf.writeDouble' + bytes + '(' + name + ', ' + offset + ');');
+      decodeBody.push(name + ': $buf.readDouble' + bytes + '(' + offset + ')');
+      break;
+    case 'string':
+      encodeCheck.push('if (typeof ' + name + ' !== "string") throw new InvalidDataType("' + name + '", "' + type + '");');
+      if (size > 0) {
+        encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0, ' + size + ')');
+        decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ').toString()');
+      } else {
+        encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0)');
+        decodeBody.push(name + ': $buf.slice(' + offset + ').toString()');
+      }
+      break;
+    case 'buffer':
+      encodeCheck.push('if (!Buffer.isBuffer(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      if (size > 0) {
+        encodeBody.push(name + '.copy($buf, ' + offset + ', 0, ' + size + ')');
+        decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ')');
+      } else {
+        encodeBody.push(name + '.copy($buf, ' + offset + ', 0)');
+        decodeBody.push(name + ': $buf.slice(' + offset + ')');
+      }
+      break;
+    default:
+      throw new NotSupportDataType(name, type);
     }
 
     offset += size;
   });
 
-  var lastItemType = String(list[list.length - 1][1]).toLowerCase();
-  var lastItemSize = Number(list[list.length - 1][2]);
+  const lastItemType = String(list[list.length - 1][1]).toLowerCase();
+  let lastItemSize = Number(list[list.length - 1][2]);
   if (lastItemType === 'float') lastItemSize = 4;
   if (lastItemType === 'double') lastItemSize = 8;
-  var lastItemName = list[list.length - 1][0];
-  var encodeSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
+  const lastItemName = list[list.length - 1][0];
+  const encodeSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
                      'var $buf = new Buffer(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
-  var encodeStrictSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
+  const encodeStrictSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
                      encodeCheck.join('\n') + '\n' +
                      'var $buf = new Buffer(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
-  var encodeExSource = '(function (data) {\n' +
-                       'return proto.encode(' + encodeArgs.map(function (n) { return 'data.' + n }).join(', ') + ');\n' +
+  const encodeExSource = '(function (data) {\n' +
+                       'return proto.encode(' + encodeArgs.map(function (n) { return 'data.' + n; }).join(', ') + ');\n' +
                        '})';
-  var encodeExStrictSource = '(function (data) {\n' +
-                       'return proto.encodeStrict(' + encodeArgs.map(function (n) { return 'data.' + n }).join(', ') + ');\n' +
+  const encodeExStrictSource = '(function (data) {\n' +
+                       'return proto.encodeStrict(' + encodeArgs.map(function (n) { return 'data.' + n; }).join(', ') + ');\n' +
                        '})';
-  var decodeSource = '(function ($buf) {\n' +
+  const decodeSource = '(function ($buf) {\n' +
                      'return {\n' +
                      decodeBody.join(',\n') + '\n' +
                      '};\n' +
                      '})';
-  var decodeStrictSource = '(function ($buf) {\n' +
+  const decodeStrictSource = '(function ($buf) {\n' +
                      'if ($buf.length < ' + offset + ') throw new IncorrectBufferSize(' + offset + ', $buf.length);\n' +
                      'return {\n' +
                      decodeBody.join(',\n') + '\n' +
