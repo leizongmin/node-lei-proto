@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/leizongmin/node-lei-proto#readme",
   "devDependencies": {
-    "mocha": "^2.3.3"
+    "mocha": "^3.0.1"
   }
 }
