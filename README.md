@@ -1,4 +1,6 @@
 # lei-proto
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/leizongmin/node-lei-proto.svg)](https://greenkeeper.io/)
 简单的Buffer编码/解析模块
 
 ## 安装
