@@ -9,7 +9,7 @@
 
 const DATA_TYPES = [ 'int', 'uint', 'float', 'double', 'string', 'buffer' ];
 
-function NotSupportDataType(parameter, type) {
+function NotSupportDataTypeError(parameter, type) {
   const err = new Error('not support type `' + type + '`');
   err.code = 'NOT_SUPPORT_TYPE';
   err.parameter = parameter;
@@ -18,7 +18,7 @@ function NotSupportDataType(parameter, type) {
 }
 
 // eslint-disable-next-line
-function InvalidDataType(parameter, type) {
+function InvalidDataTypeError(parameter, type) {
   const err = new Error('`' + parameter + '` is not a ' + type);
   err.code = 'INVALID_TYPE';
   err.parameter = parameter;
@@ -26,7 +26,7 @@ function InvalidDataType(parameter, type) {
   return err;
 }
 
-function InvalidDataSize(parameter, size) {
+function InvalidDataSizeError(parameter, size) {
   const err = new Error('invalid size for `' + parameter + '`');
   err.code = 'INVALID_DATA_SIZE';
   err.parameter = parameter;
@@ -34,14 +34,14 @@ function InvalidDataSize(parameter, size) {
   return err;
 }
 
-function InvalidParameterNameFormat(name) {
+function InvalidParameterNameFormatError(name) {
   const err = new Error('invalid parameter format `' + name + '`');
   err.code = 'INVALID_PARAMETER_FORMAT';
   err.name = name;
   return err;
 }
 
-function InvalidProtocolInfo(msg) {
+function InvalidProtocolInfoError(msg) {
   const err = new Error('invalid protocol info: ' + msg);
   err.code = 'INVALID_PROTOCOL_INFO';
   err.info = msg;
@@ -76,8 +76,8 @@ function parseProto(list) {
   let offset = 0;
 
   list.forEach(function (item, i) {
-    if (!Array.isArray(item)) throw new InvalidProtocolInfo('item must be an array');
-    if (item.length < 2) throw new InvalidProtocolInfo('missing `name` and `type`');
+    if (!Array.isArray(item)) throw new InvalidProtocolInfoError('item must be an array');
+    if (item.length < 2) throw new InvalidProtocolInfoError('missing `name` and `type`');
 
     const name = String(item[0]);
     const type = String(item[1]).toLowerCase();
@@ -89,23 +89,23 @@ function parseProto(list) {
     if (type === 'float') size = 4;
     if (type === 'double') size = 8;
 
-    if (!/^[a-zA-Z_]/.test(name)) throw new InvalidParameterNameFormat(name);
-    if (encodeArgs.indexOf(name) !== -1) throw new InvalidParameterNameFormat(name);
+    if (!/^[a-zA-Z_]/.test(name)) throw new InvalidParameterNameFormatError(name);
+    if (encodeArgs.indexOf(name) !== -1) throw new InvalidParameterNameFormatError(name);
 
-    if (DATA_TYPES.indexOf(type) === -1) throw new NotSupportDataType(name, type);
+    if (DATA_TYPES.indexOf(type) === -1) throw new NotSupportDataTypeError(name, type);
 
     if (type === 'string' || type === 'buffer') {
       if (size < 1 && i < list.length - 1) {
-        throw new InvalidDataSize(name, size);
+        throw new InvalidDataSizeError(name, size);
       }
     } else if (size < 1) {
-      throw new InvalidDataSize(name, size);
+      throw new InvalidDataSizeError(name, size);
     }
 
     encodeArgs.push(name);
     switch (type) {
     case 'int':
-      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
       if (size === 1) {
         encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
         decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
@@ -121,7 +121,7 @@ function parseProto(list) {
       }
       break;
     case 'uint':
-      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
       if (size === 1) {
         encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
         decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
@@ -137,17 +137,17 @@ function parseProto(list) {
       }
       break;
     case 'float':
-      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
       encodeBody.push('$buf.writeFloat' + bytes + '(' + name + ', ' + offset + ');');
       decodeBody.push(name + ': $buf.readFloat' + bytes + '(' + offset + ')');
       break;
     case 'double':
-      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
       encodeBody.push('$buf.writeDouble' + bytes + '(' + name + ', ' + offset + ');');
       decodeBody.push(name + ': $buf.readDouble' + bytes + '(' + offset + ')');
       break;
     case 'string':
-      encodeCheck.push('if (typeof ' + name + ' !== "string") throw new InvalidDataType("' + name + '", "' + type + '");');
+      encodeCheck.push('if (typeof ' + name + ' !== "string") throw new InvalidDataTypeError("' + name + '", "' + type + '");');
       if (size > 0) {
         encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0, ' + size + ')');
         decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ').toString()');
@@ -157,7 +157,7 @@ function parseProto(list) {
       }
       break;
     case 'buffer':
-      encodeCheck.push('if (!Buffer.isBuffer(' + name + ')) throw new InvalidDataType("' + name + '", "' + type + '");');
+      encodeCheck.push('if (!Buffer.isBuffer(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
       if (size > 0) {
         encodeBody.push(name + '.copy($buf, ' + offset + ', 0, ' + size + ')');
         decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ')');
@@ -167,7 +167,7 @@ function parseProto(list) {
       }
       break;
     default:
-      throw new NotSupportDataType(name, type);
+      throw new NotSupportDataTypeError(name, type);
     }
 
     offset += size;
@@ -201,7 +201,7 @@ function parseProto(list) {
                      '};\n' +
                      '})';
   const decodeStrictSource = '(function ($buf) {\n' +
-                     'if ($buf.length < ' + offset + ') throw new IncorrectBufferSize(' + offset + ', $buf.length);\n' +
+                     'if ($buf.length < ' + offset + ') throw new IncorrectBufferSizeError(' + offset + ', $buf.length);\n' +
                      'return {\n' +
                      decodeBody.join(',\n') + '\n' +
                      '};\n' +
