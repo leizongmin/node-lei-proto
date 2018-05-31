@@ -149,10 +149,10 @@ function parseProto(list) {
     case 'string':
       encodeCheck.push('if (typeof ' + name + ' !== "string") throw new InvalidDataTypeError("' + name + '", "' + type + '");');
       if (size > 0) {
-        encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0, ' + size + ')');
+        encodeBody.push('Buffer.from(' + name + ').copy($buf, ' + offset + ', 0, ' + size + ')');
         decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ').toString()');
       } else {
-        encodeBody.push('new Buffer(' + name + ').copy($buf, ' + offset + ', 0)');
+        encodeBody.push('Buffer.from(' + name + ').copy($buf, ' + offset + ', 0)');
         decodeBody.push(name + ': $buf.slice(' + offset + ').toString()');
       }
       break;
@@ -179,13 +179,13 @@ function parseProto(list) {
   if (lastItemType === 'double') lastItemSize = 8;
   const lastItemName = list[list.length - 1][0];
   const encodeSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
-                     'var $buf = new Buffer(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
+                     'var $buf = Buffer.alloc(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
   const encodeStrictSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
                      encodeCheck.join('\n') + '\n' +
-                     'var $buf = new Buffer(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
+                     'var $buf = Buffer.alloc(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
