@@ -182,13 +182,16 @@ function parseProto(list, options) {
   if (lastItemType === 'float') lastItemSize = 4;
   if (lastItemType === 'double') lastItemSize = 8;
   const lastItemName = list[list.length - 1][0];
+  const isDynamicSize = !(lastItemSize > 0)
   const encodeSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
+                     (isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : '') +
                      'var $buf = Buffer.alloc(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
   const encodeStrictSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
                      encodeCheck.join('\n') + '\n' +
+                     (isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : '') +
                      'var $buf = Buffer.alloc(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +

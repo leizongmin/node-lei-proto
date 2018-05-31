@@ -372,14 +372,14 @@ describe('not need `size`', function () {
       [ 'a', 'string', 5 ],
       [ 'b', 'string' ],
     ]);
-    const b = p.encodeStrict('1234567890', 'abcdefghij');
+    const b = p.encodeStrict('1234567890', '今天的天气真好，万里无云');
     const c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 5);
-    assert.equal(b.length, 15);
+    assert.equal(b.length, 41);
     assert.equal(c.a, '12345');
-    assert.equal(c.b, 'abcdefghij');
+    assert.equal(c.b, '今天的天气真好，万里无云');
   });
 
   it('#3 last `buffer` item', function () {
@@ -387,14 +387,14 @@ describe('not need `size`', function () {
       [ 'a', 'buffer', 5 ],
       [ 'b', 'buffer' ],
     ]);
-    const b = p.encodeStrict(new Buffer('1234567890'), new Buffer('abcdefghij'));
+    const b = p.encodeStrict(new Buffer('1234567890'), new Buffer('今天的天气真好'));
     const c = p.decodeStrict(b);
     dump(b);
     dump(c);
     assert.equal(p.size, 5);
-    assert.equal(b.length, 15);
+    assert.equal(b.length, 26);
     assert.equal(c.a.toString(), '12345');
-    assert.equal(c.b.toString(), 'abcdefghij');
+    assert.equal(c.b.toString(), '今天的天气真好');
   });
 
 });
