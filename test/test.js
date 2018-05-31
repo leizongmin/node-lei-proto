@@ -148,7 +148,7 @@ describe('normal', function () {
       [ 'a', 'string', 10 ],
       [ 'b', 'buffer', 10 ],
     ]);
-    const b = p.encodeStrict('abcdefghij', new Buffer('klmnopqrst'));
+    const b = p.encodeStrict('abcdefghij', Buffer.from('klmnopqrst'));
     const c = p.decodeStrict(b);
     dump(b);
     dump(c);
@@ -168,14 +168,14 @@ describe('normal', function () {
       [ 'e', 'string', 5 ],
       [ 'f', 'buffer', 6 ],
     ]);
-    const b = p.encodeStrict(1, 2, 3, 4, 'abc', new Buffer('efg'));
+    const b = p.encodeStrict(1, 2, 3, 4, 'abc', Buffer.from('efg'));
     const b2 = p.encodeExStrict({
       a: 5,
       b: 6,
       c: 7,
       d: 8,
       e: 'hjk',
-      f: new Buffer('lmn'),
+      f: Buffer.from('lmn'),
     });
     const c = p.decodeStrict(b);
     const c2 = p.decodeStrict(b2);
@@ -215,7 +215,7 @@ describe('normal', function () {
       [ 'a', 'buffer', 10 ],
       [ 'b', 'buffer' ],
     ]);
-    const b = p.encode(new Buffer('hello, world'), new Buffer('what the fuck'));
+    const b = p.encode(Buffer.from('hello, world'), Buffer.from('what the fuck'));
     dump(b);
     const c = p.decode(b);
     dump(c);
@@ -387,7 +387,7 @@ describe('not need `size`', function () {
       [ 'a', 'buffer', 5 ],
       [ 'b', 'buffer' ],
     ]);
-    const b = p.encodeStrict(new Buffer('1234567890'), new Buffer('今天的天气真好'));
+    const b = p.encodeStrict(Buffer.from('1234567890'), Buffer.from('今天的天气真好'));
     const c = p.decodeStrict(b);
     dump(b);
     dump(c);
