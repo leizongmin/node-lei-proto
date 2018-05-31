@@ -48,42 +48,6 @@ function InvalidProtocolInfo(msg) {
   return err;
 }
 
-
-/*
-  proto = [
-    ['a', 'uint', 2, 'be'],
-    ['b', 'uint', 4, 'le'],
-    ['c', 'buffer', 10],
-    ['d', 'string', 5]
-  ];
-
-  function encode(a, b, c, d) {
-    if (typeof a !== 'number' || isNaN(a)) throw new InvalidDataType('a', 'uint');
-    if (typeof a !== 'number' || isNaN(b)) throw new InvalidDataType('b', 'uint');
-    if (!Buffer.isBuffer(c)) InvalidDataType('c', 'buffer');
-    if (typeof d !== 'string') InvalidDataType('d', 'string');
-    var $buf = new Buffer(21);
-    $buf.writeUInt16BE(a, 0);
-    $buf.writeUInt32LE(b, 2);
-    c.copy($buf, 6, 0, 10);
-    $buf.write(d, 16, 5);
-    return $buf;
-  }
-
-  function decode($buf) {
-    return {
-      a: $buf.readUInt16BE(0),
-      b: $buf.readUInt32LE(2),
-      c: $buf.slice(6, 16),
-      d: $buf.slice(16, 21).toString()
-    };
-  }
-
-  function encodeEx(data) {
-    return encode(data.a, data.b, data.c, data.d);
-  }
-*/
-
 function generateFunction(encodeSource, encodeExSource, encodeStrictSource, encodeExStrictSource, decodeSource, decodeStrictSource, offset) {
   const proto = {
     // 编码器
@@ -245,34 +209,5 @@ function parseProto(list) {
 
   return generateFunction(encodeSource, encodeExSource, encodeStrictSource, encodeExStrictSource, decodeSource, decodeStrictSource, offset);
 }
-
-/*
-var ret = parseProto([
-  ['a', 'int', 1],
-  ['b', 'int', 2],
-  ['c', 'int', 3],
-  ['d', 'int', 4],
-  ['e', 'uint', 1],
-  ['f', 'uint', 2],
-  ['g', 'uint', 3],
-  ['h', 'uint', 4],
-  ['i', 'float'],
-  ['j', 'double'],
-  ['k', 'string', 30],
-  ['l', 'buffer', 10]
-]);
-console.log(ret.encode.toString());
-console.log(ret.decode.toString());
-
-var b = ret.encode(1, 2, 3, 4, 5, 6, 7, 8, 9.5, 10.10, '今天的天气真好', new Buffer('xxxx2xxxx2xxxx0'));
-console.log(b);
-console.log(new Buffer('xxxx2xxxx2xxxx0'))
-
-var c = ret.decode(b);
-console.log(c);
-
-var c = ret.decode(b.slice(0, -1));
-console.log(c);
-*/
 
 module.exports = parseProto;
