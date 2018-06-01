@@ -30,7 +30,7 @@
     decode: function($buf) {
       return {
         a: $buf.slice(0, 5),
-        b: $buf.slice(5)
+        b: $buf.slice(5),
       };
     },
     // 严格模式的解码器
@@ -38,11 +38,11 @@
       if ($buf.length < 5) throw new IncorrectBufferSizeError(5, $buf.length);
       return {
         a: $buf.slice(0, 5),
-        b: $buf.slice(5)
+        b: $buf.slice(5),
       };
     },
     // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
-    size: offset
+    size: offset,
   };
   return proto;
 })();
