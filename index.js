@@ -109,65 +109,65 @@ function parseProto(list, options) {
     encodeArgs.push(name);
     switch (type) {
     case 'int':
-      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
+      encodeCheck.push(`if (typeof a !== "number" || isNaN(${name})) throw new InvalidDataTypeError("${name}", "${type}");`);
       if (size === 1) {
-        encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
-        decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
+        encodeBody.push(`$buf.writeUInt8(${name}, ${offset});`);
+        decodeBody.push(`${name}: $buf.readUInt8(${offset})`);
       } else if (size === 2) {
-        encodeBody.push('$buf.writeInt16' + bytes + '(' + name + ', ' + offset + ');');
-        decodeBody.push(name + ': $buf.readInt16' + bytes + '(' + offset + ')');
+        encodeBody.push(`$buf.writeInt16${bytes}(${name}, ${offset});`);
+        decodeBody.push(`${name}: $buf.readInt16${bytes}(${offset})`);
       } else if (size === 4) {
-        encodeBody.push('$buf.writeInt32' + bytes + '(' + name + ', ' + offset + ');');
-        decodeBody.push(name + ': $buf.readInt32' + bytes + '(' + offset + ')');
+        encodeBody.push(`$buf.writeInt32${bytes}(${name}, ${offset});`);
+        decodeBody.push(`${name}: $buf.readInt32${bytes}(${offset})`);
       } else {
-        encodeBody.push('$buf.writeInt' + bytes + '(' + name + ', ' + offset + ', ' + size + ');');
-        decodeBody.push(name + ': $buf.readInt' + bytes + '(' + offset + ', ' + size + ')');
+        encodeBody.push(`$buf.writeInt${bytes}(${name}, ${offset}, ${size});`);
+        decodeBody.push(`${name}: $buf.readInt${bytes}(${offset}, ${size})`);
       }
       break;
     case 'uint':
-      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
+      encodeCheck.push(`if (typeof a !== "number" || isNaN(${name})) throw new InvalidDataTypeError("${name}", "${type}");`);
       if (size === 1) {
-        encodeBody.push('$buf.writeUInt8(' + name + ', ' + offset + ');');
-        decodeBody.push(name + ': $buf.readUInt8(' + offset + ')');
+        encodeBody.push(`$buf.writeUInt8(${name}, ${offset});`);
+        decodeBody.push(`${name}: $buf.readUInt8(${offset})`);
       } else if (size === 2) {
-        encodeBody.push('$buf.writeUInt16' + bytes + '(' + name + ', ' + offset + ');');
-        decodeBody.push(name + ': $buf.readUInt16' + bytes + '(' + offset + ')');
+        encodeBody.push(`$buf.writeUInt16${bytes}(${name}, ${offset});`);
+        decodeBody.push(`${name}: $buf.readUInt16${bytes}(${offset})`);
       } else if (size === 4) {
-        encodeBody.push('$buf.writeUInt32' + bytes + '(' + name + ', ' + offset + ');');
-        decodeBody.push(name + ': $buf.readUInt32' + bytes + '(' + offset + ')');
+        encodeBody.push(`$buf.writeUInt32${bytes}(${name}, ${offset});`);
+        decodeBody.push(`${name}: $buf.readUInt32${bytes}(${offset})`);
       } else {
-        encodeBody.push('$buf.writeUInt' + bytes + '(' + name + ', ' + offset + ', ' + size + ');');
-        decodeBody.push(name + ': $buf.readUInt' + bytes + '(' + offset + ', ' + size + ')');
+        encodeBody.push(`$buf.writeUInt${bytes}(${name}, ${offset}, ${size});`);
+        decodeBody.push(`${name}: $buf.readUInt${bytes}(${offset}, ${size})`);
       }
       break;
     case 'float':
-      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
-      encodeBody.push('$buf.writeFloat' + bytes + '(' + name + ', ' + offset + ');');
-      decodeBody.push(name + ': $buf.readFloat' + bytes + '(' + offset + ')');
+      encodeCheck.push(`if (typeof a !== "number" || isNaN(${name})) throw new InvalidDataTypeError("${name}", "${type}");`);
+      encodeBody.push(`$buf.writeFloat${bytes}(${name}, ${offset});`);
+      decodeBody.push(`${name}: $buf.readFloat${bytes}(${offset})`);
       break;
     case 'double':
-      encodeCheck.push('if (typeof a !== "number" || isNaN(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
-      encodeBody.push('$buf.writeDouble' + bytes + '(' + name + ', ' + offset + ');');
-      decodeBody.push(name + ': $buf.readDouble' + bytes + '(' + offset + ')');
+      encodeCheck.push(`if (typeof a !== "number" || isNaN(${name})) throw new InvalidDataTypeError("${name}", "${type}");`);
+      encodeBody.push(`$buf.writeDouble${bytes}(${name}, ${offset});`);
+      decodeBody.push(`${name}: $buf.readDouble${bytes}(${offset})`);
       break;
     case 'string':
-      encodeCheck.push('if (typeof ' + name + ' !== "string") throw new InvalidDataTypeError("' + name + '", "' + type + '");');
+      encodeCheck.push(`if (typeof ${name} !== "string") throw new InvalidDataTypeError("${name}", "${type}");`);
       if (size > 0) {
-        encodeBody.push('Buffer.from(' + name + ').copy($buf, ' + offset + ', 0, ' + size + ')');
-        decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ').toString()');
+        encodeBody.push(`Buffer.from(${name}).copy($buf, ${offset}, 0, ${size})`);
+        decodeBody.push(`${name}: $buf.slice(${offset}, ${offset + size}).toString()`);
       } else {
-        encodeBody.push('Buffer.from(' + name + ').copy($buf, ' + offset + ', 0)');
-        decodeBody.push(name + ': $buf.slice(' + offset + ').toString()');
+        encodeBody.push(`Buffer.from(${name}).copy($buf, ${offset}, 0)`);
+        decodeBody.push(`${name}: $buf.slice(${offset}).toString()`);
       }
       break;
     case 'buffer':
-      encodeCheck.push('if (!Buffer.isBuffer(' + name + ')) throw new InvalidDataTypeError("' + name + '", "' + type + '");');
+      encodeCheck.push(`if (!Buffer.isBuffer(${name})) throw new InvalidDataTypeError("${name}", "${type}");`);
       if (size > 0) {
-        encodeBody.push(name + '.copy($buf, ' + offset + ', 0, ' + size + ')');
-        decodeBody.push(name + ': $buf.slice(' + offset + ', ' + (offset + size) + ')');
+        encodeBody.push(`${name}.copy($buf, ${offset}, 0, ${size})`);
+        decodeBody.push(`${name}: $buf.slice(${offset}, ${offset + size})`);
       } else {
-        encodeBody.push(name + '.copy($buf, ' + offset + ', 0)');
-        decodeBody.push(name + ': $buf.slice(' + offset + ')');
+        encodeBody.push(`${name}.copy($buf, ${offset}, 0)`);
+        decodeBody.push(`${name}: $buf.slice(${offset})`);
       }
       break;
     default:
