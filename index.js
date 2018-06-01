@@ -167,7 +167,8 @@ function parseProto(list, options) {
       case "string":
         encodeCheck.push(`if (typeof ${name} !== "string") throw new InvalidDataTypeError("${name}", "${type}");`);
         if (size > 0) {
-          encodeBody.push(`Buffer.from(${name}).copy($buf, ${offset}, 0, ${size})`);
+          // encodeBody.push(`Buffer.from(${name}).copy($buf, ${offset}, 0, ${size})`);
+          encodeBody.push(`$buf.write(${name}, ${offset}, ${size})`);
           decodeBody.push(`${name}: $buf.slice(${offset}, ${offset + size}).toString()`);
         } else {
           encodeBody.push(`Buffer.from(${name}).copy($buf, ${offset}, 0)`);
