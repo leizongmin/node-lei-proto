@@ -51,19 +51,19 @@ function InvalidProtocolInfoError(msg) {
 function generateJsCodes(encodeSource, encodeExSource, encodeStrictSource, encodeExStrictSource, decodeSource, decodeStrictSource, offset) {
   return `(function () {
     var proto = {
-      // 编码器
+      /** 编码器 */
       encode: ${encodeSource},
-      // 编码器，参数为一个对象
+      /** 编码器，参数为一个对象 */
       encodeEx: ${encodeExSource},
-      // 严格模式的编码器
+      /** 严格模式的编码器 */
       encodeStrict: ${encodeStrictSource},
-      // 严格模式的编码器，参数为一个对象
+      /** 严格模式的编码器，参数为一个对象 */
       encodeExStrict: ${encodeExStrictSource},
-      // 解码器
+      /** 解码器 */
       decode: ${decodeSource},
-      // 严格模式的解码器
+      /** 严格模式的解码器 */
       decodeStrict: ${decodeStrictSource},
-      // 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度
+      /** 数据包长度，如果最后一项是不定长的，则总长度为size+最后一项的长度 */
       size: offset,
     };
     return proto;
