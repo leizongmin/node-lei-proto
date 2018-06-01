@@ -16,7 +16,6 @@ function NotSupportDataTypeError(parameter, type) {
   return err;
 }
 
-// eslint-disable-next-line
 function InvalidDataTypeError(parameter, type) {
   const err = new Error("`" + parameter + "` is not a " + type);
   err.code = "INVALID_TYPE";
