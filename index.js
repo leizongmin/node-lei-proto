@@ -185,14 +185,14 @@ function parseProto(list, options) {
   const isDynamicSize = !(lastItemSize > 0)
   const encodeSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
                      (isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : '') +
-                     'var $buf = Buffer.alloc(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
+                     'var $buf = Buffer.allocUnsafe(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
   const encodeStrictSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
                      encodeCheck.join('\n') + '\n' +
                      (isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : '') +
-                     'var $buf = Buffer.alloc(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
+                     'var $buf = Buffer.allocUnsafe(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
