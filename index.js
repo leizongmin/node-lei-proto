@@ -183,13 +183,15 @@ function parseProto(list, options) {
   if (lastItemType === 'double') lastItemSize = 8;
   const lastItemName = list[list.length - 1][0];
   const isDynamicSize = !(lastItemSize > 0)
-  const encodeSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
+  const argNames = encodeArgs.join(', ');
+  const argNames2 = encodeArgs.map(function (n) { return 'data.' + n; }).join(', ');
+  const encodeSource = '(function (' + argNames + ') {\n' +
                      (isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : '') +
                      'var $buf = Buffer.allocUnsafe(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
                      encodeBody.join('\n') + '\n' +
                      'return $buf;\n' +
                      '})';
-  const encodeStrictSource = '(function (' + encodeArgs.join(', ') + ') {\n' +
+  const encodeStrictSource = '(function (' + argNames + ') {\n' +
                      encodeCheck.join('\n') + '\n' +
                      (isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : '') +
                      'var $buf = Buffer.allocUnsafe(' + (lastItemSize > 0 ? offset : offset + ' + ' + lastItemName + '.length') + ')\n' +
@@ -197,10 +199,10 @@ function parseProto(list, options) {
                      'return $buf;\n' +
                      '})';
   const encodeExSource = '(function (data) {\n' +
-                       'return proto.encode(' + encodeArgs.map(function (n) { return 'data.' + n; }).join(', ') + ');\n' +
+                       'return proto.encode(' + argNames2 + ');\n' +
                        '})';
   const encodeExStrictSource = '(function (data) {\n' +
-                       'return proto.encodeStrict(' + encodeArgs.map(function (n) { return 'data.' + n; }).join(', ') + ');\n' +
+                       'return proto.encodeStrict(' + argNames2 + ');\n' +
                        '})';
   const decodeSource = '(function ($buf) {\n' +
                      'return {\n' +
