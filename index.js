@@ -199,52 +199,30 @@ function parseProto(list, options) {
   const lastItemName = list[list.length - 1][0];
   const isDynamicSize = !(lastItemSize > 0);
   const argNames = encodeArgs.join(", ");
-  const argNames2 = encodeArgs
-    .map(function(n) {
-      return "data." + n;
-    })
-    .join(", ");
-  const encodeSource =
-    "(function (" +
-    argNames +
-    ") {\n" +
-    (isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : "") +
-    "var $buf = Buffer.allocUnsafe(" +
-    (lastItemSize > 0 ? offset : offset + " + " + lastItemName + ".length") +
-    ")\n" +
-    encodeBody.join("\n") +
-    "\n" +
-    "return $buf;\n" +
-    "})";
-  const encodeStrictSource =
-    "(function (" +
-    argNames +
-    ") {\n" +
-    encodeCheck.join("\n") +
-    "\n" +
-    (isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : "") +
-    "var $buf = Buffer.allocUnsafe(" +
-    (lastItemSize > 0 ? offset : offset + " + " + lastItemName + ".length") +
-    ")\n" +
-    encodeBody.join("\n") +
-    "\n" +
-    "return $buf;\n" +
-    "})";
-  const encodeExSource = "(function (data) {\n" + "return proto.encode(" + argNames2 + ");\n" + "})";
-  const encodeExStrictSource = "(function (data) {\n" + "return proto.encodeStrict(" + argNames2 + ");\n" + "})";
-  const decodeSource = "(function ($buf) {\n" + "return {\n" + decodeBody.join(",\n") + "\n" + "};\n" + "})";
-  const decodeStrictSource =
-    "(function ($buf) {\n" +
-    "if ($buf.length < " +
-    offset +
-    ") throw new IncorrectBufferSizeError(" +
-    offset +
-    ", $buf.length);\n" +
-    "return {\n" +
-    decodeBody.join(",\n") +
-    "\n" +
-    "};\n" +
-    "})";
+  const argNames2 = encodeArgs.map(n => `data.${n}`).join(", ");
+  const encodeBodyLines = encodeBody.join("\n");
+  const decodeBodyLines = decodeBody.join(",\n");
+  const encodeCheckLines = encodeCheck.join("\n");
+  const encodeSource = `(function (${argNames}) {
+    ${isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : ""}
+    var $buf = Buffer.allocUnsafe(${lastItemSize > 0 ? offset : `${offset}+${lastItemName}.length`});
+    ${encodeBodyLines}
+    return $buf;
+  })`;
+  const encodeStrictSource = `(function (${argNames}) {
+    ${encodeCheckLines}
+    ${isDynamicSize ? `${lastItemName} = Buffer.from(${lastItemName});` : ""}
+    var $buf = Buffer.allocUnsafe(${lastItemSize > 0 ? offset : `${offset}+${lastItemName}.length`});
+    ${encodeBodyLines}
+    return $buf;
+    })`;
+  const encodeExSource = `(function (data) { return proto.encode(${argNames2}); })`;
+  const encodeExStrictSource = `(function (data) { return proto.encodeStrict(${argNames2}); })`;
+  const decodeSource = `(function ($buf) { return { ${decodeBodyLines} }; })`;
+  const decodeStrictSource = `(function ($buf) {
+    if ($buf.length < ${offset}) throw new IncorrectBufferSizeError(${offset}, $buf.length);
+    return { ${decodeBodyLines} };
+    })`;
 
   const js = generateJsCodes(
     encodeSource,
